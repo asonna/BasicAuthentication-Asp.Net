@@ -16,12 +16,16 @@ namespace BasicAuthentication.Controllers
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+
+        public object UserManager { get; internal set; }
+
         public AccountController (UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ApplicationDbContext db)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _db = db;
         }
+        public AccountController() { }
         public IActionResult Index()
         {
             return View();

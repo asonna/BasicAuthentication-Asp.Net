@@ -99,31 +99,35 @@ namespace BasicAuthentication.Controllers
             }
         }
 
-        //public ActionResult ManageUserRoles()
-        //{
-        //    // prepopulat roles for the view dropdown
-        //    var list = _db.Roles.OrderBy(r => r.Name).ToList().Select(rr =>
+        public IActionResult ManageUserRoles()
+        {
+            // prepopulat roles for the view dropdown
+            var list = _db.Roles.OrderBy(r => r.Name).ToList().Select(rr => new SelectListItem { Value = rr.Id.ToString(), Text = rr.Name }).ToList();
+            ViewBag.Roles = list;
+            return View();
+        }
 
-        //new SelectListItem { Value = rr.Name.ToString(), Text = rr.Name }).ToList();
-        //    ViewBag.Roles = list;
-        //    return View();
-        //}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RoleAddToUser(string UserName, string RoleId)
+        {
+            try
+            {
+                ApplicationUser user = _db.Users.FirstOrDefault(u => u.UserName == UserName);
+                var task = await _userManager.AddToRoleAsync(user, RoleId);
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult RoleAddToUser(string UserName, string RoleName)
-        //{
-        //    ApplicationUser user = _db.Users.Where(u => u.UserName.Equals(UserName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
-        //    var account = new AccountController();
-        //    account.UserManager.AddToRole(user.Id, RoleName);
+            }
+            catch(Exception ex)
+            {
+                return View();
+            }
+            ViewBag.ResultMessage = "Role created successfully !";
 
-        //    ViewBag.ResultMessage = "Role created successfully !";
+            // prepopulat roles for the view dropdown
+            var list = _db.Roles.OrderBy(r => r.Name).ToList().Select(rr => new SelectListItem { Value = rr.Id.ToString(), Text = rr.Name }).ToList();
+            ViewBag.Roles = list;
 
-        //    // prepopulat roles for the view dropdown
-        //    var list = _db.Roles.OrderBy(r => r.Name).ToList().Select(rr => new SelectListItem { Value = rr.Name.ToString(), Text = rr.Name }).ToList();
-        //    ViewBag.Roles = list;
-
-        //    return View("ManageUserRoles");
-        //}
+            return View("ManageUserRoles");
+        }
     }
 }
